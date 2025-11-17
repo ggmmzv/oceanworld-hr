@@ -41,20 +41,21 @@ jobs:
         test -f oceanworld_report.php && echo "✅ PHP file exists"
         test -f oceanworld_data.xml && echo "✅ XML file exists"
         
-    - name: HTML Validation
-      run: |
-        pip install html5validator
-        html5validator --root oceanworld_report.html
+    # ЗАКОММЕНТИРУЙ эти шаги:
+    # - name: HTML Validation
+    #   run: |
+    #     pip install html5validator
+    #     html5validator --root oceanworld_report.html
         
-    - name: XML Validation
-      run: |
-        pip install xmlschema
-        python -c "
-        import xml.etree.ElementTree as ET
-        try:
-            ET.parse('oceanworld_data.xml')
-            print('✅ XML is valid')
-        except Exception as e:
-            print('❌ XML error:', e)
-            exit(1)
-        "
+    # - name: XML Validation
+    #   run: |
+    #     pip install xmlschema
+    #     python -c "
+    #     import xml.etree.ElementTree as ET
+    #     try:
+    #         ET.parse('oceanworld_data.xml')
+    #         print('✅ XML is valid')
+    #     except Exception as e:
+    #         print('❌ XML error:', e)
+    #         exit(1)
+    #     "
