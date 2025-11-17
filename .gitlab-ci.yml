@@ -1,0 +1,21 @@
+stages:
+  - test
+  - deploy
+
+test:
+  stage: test
+  image: python:3.12
+  before_script:
+    - pip install pandas openpyxl faker jinja2 html5validator
+  script:
+    - python generate_data.py
+    - python export_to_formats.py
+    - html5validator --root oceanworld_report.html
+    - python -c "import xml.etree.ElementTree as ET; ET.parse('oceanworld_data.xml'); print('✅ XML valid')"
+  artifacts:
+    paths:
+      - oceanworld_data.xlsx
+      - oceanworld_report.html
+      - oceanworld_report.php
+      - oceanworld_data.xml
+    expire_in: 1 week

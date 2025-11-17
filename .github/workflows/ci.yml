@@ -1,0 +1,60 @@
+name: CI/CD for OceanWorld HR
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pandas openpyxl faker jinja2
+        
+    - name: Generate test data
+      run: |
+        python generate_data.py
+        
+    - name: Export to formats
+      run: |
+        python export_to_formats.py
+        
+    - name: Validate files exist
+      run: |
+        echo "Checking generated files:"
+        ls -la
+        test -f oceanworld_data.xlsx && echo "✅ Excel file exists"
+        test -f oceanworld_report.html && echo "✅ HTML file exists" 
+        test -f oceanworld_report.php && echo "✅ PHP file exists"
+        test -f oceanworld_data.xml && echo "✅ XML file exists"
+        
+    - name: HTML Validation
+      run: |
+        pip install html5validator
+        html5validator --root oceanworld_report.html
+        
+    - name: XML Validation
+      run: |
+        pip install xmlschema
+        python -c "
+        import xml.etree.ElementTree as ET
+        try:
+            ET.parse('oceanworld_data.xml')
+            print('✅ XML is valid')
+        except Exception as e:
+            print('❌ XML error:', e)
+            exit(1)
+        "
